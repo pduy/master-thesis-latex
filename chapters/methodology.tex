@@ -1,0 +1,35 @@
+\chapter{Methodology\label{cha:methodology}}
+In this chapter, we describe what we perform in order to achieve the objective of the
+thesis.
+
+\section{GAN structure}
+\subsection{Network Architecture}
+\subsection{Input Data}
+\subsection{Output Data}
+\section{Baseline task structure}
+\subsection{Transfer Learning}
+\subsection{AlexNet}
+\subsection{Network Architecture}
+\section{Evaluation Method}
+\subsection{Train-Test split methodology\label{sec:train_test_split}}
+In the baseline classifier, we split the data using the strategy in Eitel et al \todo{cite
+eitel}, our baseline classifier. In each instance, every fifth frame is sampled and in
+every object, one instance is randomly and completely taken out. This gives us about
+138000 items for training and about 69000 items for testing.  We also perform the
+10-cross-validation splits introduced in Lai et al \todo{cite Lai}.  That is, each of the
+lifting angle sequence is divided in to 3 sub-sequences (let us recall that each instance
+in the Washington RGBD dataset is recorded in 3 different lifting angles: 30, 45 and 60
+degrees).  Among those 9 sub-sequences, two are randomly added to the evaluation set. In
+total, each experiment is done by using about 128000 items for training and about 78000
+items for testing.
+
+For GAN training, as we aim to use the GAN results to substitute the real data in training
+the baseline classifier, we also have to design an additional train-test split. The
+evaluation set generated from the previous strategy is left alone without any further
+modification. Instead, we randomly split the classifier's training set in different
+scales: 50-50, 25-75 and 10-90. The left portions are used for training the GAN, and the right
+portions are used to evaluate it, of which the results will substitute the corresponding
+real items in the training set of the classifier.
+
+Currently, 3 CV splits are used in all experiments. (\todo{this line will be removed in
+the final version})
