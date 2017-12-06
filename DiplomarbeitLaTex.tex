@@ -16,6 +16,8 @@
 \usepackage{todonotes}
 \usepackage{subcaption}
 \usepackage[acronym]{glossaries}
+\usepackage{amsfonts}
+\usepackage{gensymb}
 
 % header and footer line - no header & footer line on pages where a new chapter starts
 \pagestyle{scrheadings}
@@ -33,6 +35,9 @@
 \newacronym{ml}{ML}{Machine Learning}
 \newacronym{vae}{VAE}{Variational Auto Encoder}
 \newacronym{dl}{DL}{Deep Learning}
+\newacronym{pix}{Pix2Pix}{Image-to-Image Translation with Conditional Adversarial Networks}
+\newacronym{ai}{AI}{Artificial Intelligence}
+\newacronym{mse}{MSE}{Mean Squared Error}
 
 \begin{document}
 % ---------------------------------------------------------------
@@ -56,7 +61,7 @@
     
     \include{./misc/abstract_de}
     \thispagestyle{empty}
-    
+
     
     \tableofcontents
     \thispagestyle{empty}
@@ -66,6 +71,7 @@
     
     \listoftables
     \thispagestyle{empty}
+
     
 % --------------------------------------------------------------
 
@@ -79,13 +85,14 @@
 
 % ---------------------------------------------------------------
 \backmatter % no page numbering from here
-    \input{./misc/acronyms}
+    %\input{./misc/acronyms}
 		
 		% if you want to provide a glossary with explanations of important terms put it in here
 
-    \bibliographystyle{geralpha}
+    %\bibliographystyle{geralpha}
+    \bibliographystyle{plain}
     \bibliography{./bib/references}
     
-    \input{./misc/annex}
+    %\input{./misc/annex}
 
 \end{document}

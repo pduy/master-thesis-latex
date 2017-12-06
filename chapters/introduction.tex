@@ -50,7 +50,7 @@ also increase the robustness of the learning engine.
 
 % GAN
 \subsection{\acrfull{gan}}
-\acrlong{gan}s (\todo{cite GAN}) are Unsupervised Deep Neural Networks where the learning
+\acrlong{gan}s \cite{gan} are Unsupervised Deep Neural Networks where the learning
 engine consists of two competing components: The Generator and the Discriminator. As its
 name indicates, the generator tries to generate data from a noise distribution, could be
 conditioned on some input or have no conditions; while the discriminator tries to classify
@@ -63,8 +63,8 @@ distribution. The distribution that \acrshort{gan}, or particularly the Generato
 can be unconditional or conditional. The original idea of \acrshort{gan} is unconditional,
 whereas many following-up papers use a conditional version to better train it for specific
 tasks. The advantage of \acrshort{gan} comparing to some other altenatives such as
-\acrfull{vae} \todo{cite VAE} is that \acrshort{gan} tends to produce more realistic images with less
-blurry boundaries, which is a shortcoming of the L2 loss (\todo{cite GAN tutorial}.
+\acrfull{vae} \cite{vae} is that \acrshort{gan} tends to produce more realistic images with less
+blurry boundaries, which is a shortcoming of the L2 loss \cite{gan}.
 However, because \acrshort{gan} does not minimize a standard loss function between the
 outputs and the targets, evaluating it is still a challenge. In many cases, human
 evaluation is used.
@@ -81,7 +81,7 @@ or a few layers before the Softmax as representations for other tasks.
 
 \section{Objective\label{sec:objective}}
 The main focus of this Master Thesis is the performance of \acrfull{gan} on RGB-D data,
-particularly the Washington RGB-D Dataset \todo{cite Washington dataset}. We would like to
+particularly the Washington RGB-D Dataset \cite{washington_rgbd}. We would like to
 find out if \acrshort{gan} is able to generate good object images, particularly useful
 images as training items for an Object Recognition engine. In the effort to evaluate if
 \acrshort{gan} is able to generating useful data for improving classification performance
@@ -93,11 +93,10 @@ Network for Object Recognition, which we call the ``Baseline Classifier''.
 The Thesis focuses on evaluating the performance of a trained \acrshort{gan}'s outputs on
 training a standard \acrshort{ml} task. Particularly, the author aims to train
 \acrshort{gan}s to learn distributions from the Washington Object RGB-D Dataset
-(\todo{cite Washington dataset}), then evaluate the effect that the \acrshort{gan} data
-have in Eitel et al. (\todo{cite eitel}). In all of the experiments, a conditional version
+\cite{washington_rgbd}, then evaluate the effect that the \acrshort{gan} data
+have in Eitel et al. \cite{eitel}. In all of the experiments, a conditional version
 of \acrshort{gan} is used. The original unconditional \acrshort{gan} is not in the scope
-of this Thesis. Besides, as we do not aim to evaluate how realistic the outputs are, we do
-not perform human evaluation as some other researches have done (\todo{cite some}). 
+of this Thesis.  
 
 \subsection{Using a \acrshort{gan} to learn representations from Washington RGBD Dataset} 
 In this thesis, two different settings of \acrshort{gan} are experimented. 
@@ -113,9 +112,10 @@ this Generator tries to ``rotate'' the object by an angle. The Discriminator, as
 tries to classify the real RGB-D pair from the ``fake'' pair.
 
 \subsection{Training a deep neural network to do object classification}
-In this Thesis, we use the work from Eitel et al. (\todo{cite Eitel}) because of several
+In this Thesis, we use the work from Eitel et al. \cite{eitel} because of several
 reasons. First, it is relevant to our scope; the authors train an Object Recognition
-Network using Transfer Learning from CaffeNet (\todo{cite CaffeNet}). Second, its
+Network using Transfer Learning from CaffeNet, one of the first reference implementation
+of AlexNet \cite{alexnet}. Second, its
 evaluation is based on same dataset (Washington RGB-D) and in the manner that fits us
 (learning from both RGB and Depth data). Finally, it achieves high accuracies (more than
 91\% when using both RGB and Depth data).
@@ -123,7 +123,7 @@ evaluation is based on same dataset (Washington RGB-D) and in the manner that fi
 \subsection{Comparing classification performances on original data and data from
 	\acrshort{gan} in different scales}
 We perform the evaluation of a \acrshort{gan} in multiple steps. First of all, we
-reproduce the paper's (\todo{cite Eitel}) results by implementing the Classification
+reproduce the paper's \cite{eitel} results by implementing the Classification
 Network in Tensorflow.  Second, we substitute a part of training data by the generated
 data from the corresponding \acrshort{gan}, in different levels (50\%, 75\%, and 90\%),
 and train the Classification Network accordingly. All of the resulting models are tested

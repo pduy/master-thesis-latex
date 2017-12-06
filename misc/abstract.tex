@@ -8,16 +8,27 @@
 \vspace*{0.5cm}
 
 \noindent
-This template is intended to give an introduction of how to write diploma and master thesis at the chair 'Architektur der Vermittlungsknoten' of the Technische Universit�t Berlin. Please don't use the term 'Technical University' in your thesis because this is a proper name. 
+
+\acrfull{gan}s have shown a great potential for being a powerful implicit model. They have
+achieved impressive results in image generation and image-to-image translation. The
+ability to capture a complex data distribution makes \acrshort{gan} a good candidate for
+representation learning and data augmentation, which are effective tools for improving
+\acrlong{ml} performance.
 \\
+
+In this Master Thesis, we train some models of \acrfull{gan} to augment an 3D image
+dataset which are useful in enhancing the robustness of an Object Classifier. One of the
+\acrshort{gan}s shows a good ability to translate a normal 2D image to a 3D depth map. The
+results are good in terms of both human eyes and quantitative measurements in a baseline
+Deep Classifier. Our experiments show that \acrshort{gan} synthesized data is useful when
+being added in large quantity to an incomplete (to some extent) training dataset. As Deep
+Learning has been the dominant \acrfull{ai} tool in Computer Vision in the last decade,
+and training a Deep Neural Network requires a huge training dataset, our approach reveals
+a potential direction that can help training a Deep Classifier easier.
 \\
-On the one hand this PDF should give a guidance to people who will soon start to write their thesis. The overall structure is explained by examples. On the other hand this text is provided as a collection of LaTeX files that can be used as a template for a new thesis. Feel free to edit the design.
-\\
-\\
-It is highly recommended to write your thesis with LaTeX. I prefer to use Miktex in combination with TeXnicCenter (both freeware) but you can use any other LaTeX software as well. For managing the references I use the open-source tool jabref. For diagrams and graphs I tend to use MS Visio with PDF plugin. Images look much better when saved as vector images. For logos and 'external' images use JPG or PNG. In your thesis you should try to explain as much as possible with the help of images.
-\\
-\\
-The abstract is the most important part of your thesis. Take your time to write it as good as possible. Abstract should have no more than one page. It is normal to rewrite the abstract again and again, so  probaly you won't write the final abstract before the last week of due-date. Before submitting your thesis you should give at least the abstract, the introduction and the conclusion to a native english speaker. It is likely that almost no one will read your thesis as a whole but most people will read the abstract, the introduction and the conclusion.
-\\
-\\
-Start with some introductionary lines, followed by some words why your topic is relevant and why your solution is needed concluding with 'what I have done'. Don't use too many buzzwords. The abstract may also be read by people who are not familiar with your topic.
+
+In the way around, it is also very hard to evaluate \acrshort{gan}s' data because these
+models do not minimize a normal scalar loss function, which means traditional quantitative
+methods such as \acrfull{mse} are not able to show how good the synthesized data is. As
+\acrshort{gan}s are popular for generating realistic photos, evaluating them by a very
+well-trained Object Classifier could be a good approach.
