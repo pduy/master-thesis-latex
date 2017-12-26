@@ -18,6 +18,9 @@
 \usepackage[acronym]{glossaries}
 \usepackage{amsfonts}
 \usepackage{gensymb}
+\usepackage{multirow}
+\usepackage{placeins}
+\usepackage{booktabs}
 
 % header and footer line - no header & footer line on pages where a new chapter starts
 \pagestyle{scrheadings}
@@ -31,13 +34,15 @@
 
 \input{./misc/hyphenation} 					% use this file to set explicit hyphenations (doesn't seem to work correctly)
 
-\newacronym{gan}{GAN}{Generative Adversarial Network}
+\newacronym{gan}{GAN}{Generative Adversarial Networks}
 \newacronym{ml}{ML}{Machine Learning}
 \newacronym{vae}{VAE}{Variational Auto Encoder}
 \newacronym{dl}{DL}{Deep Learning}
 \newacronym{pix}{Pix2Pix}{Image-to-Image Translation with Conditional Adversarial Networks}
 \newacronym{ai}{AI}{Artificial Intelligence}
 \newacronym{mse}{MSE}{Mean Squared Error}
+\newacronym{cnn}{CNN}{Convolutional Neural Networks}
+\newacronym{hog}{HOG}{Histogram of Gradients}
 
 \begin{document}
 % ---------------------------------------------------------------
@@ -46,7 +51,7 @@
    	\thispagestyle{empty}
     \cleardoublepage
     
-    %\include{./misc/thanx}
+	\include{./misc/thanx}
     %\thispagestyle{empty}
     %\cleardoublepage
     
@@ -80,6 +85,7 @@
     \input{./chapters/introduction}
     \input{./chapters/relatedwork}
     \input{./chapters/methodology}
+    \input{./chapters/model}
     \input{./chapters/evaluation}
     \input{./chapters/conclusion}
 

@@ -16,9 +16,11 @@ object by a particular angle while being conditioned on the object 2D image and 
 corresponding depth-map. We call this one the "Pose-GAN"
 
 \subsection{Network Architecture}
+
 We inherit the architecture from \acrshort{pix} with only some occasional modifications in
 the input and output layers because our experiments, especially the first one which
-generates depth-maps from an RGB image, is very close to their settings. 
+generates depth-maps from an RGB image, is very close to their settings. The detailed
+settings are shown in chapter \ref{cha:model}.
 
 The Generator is basically an U-Net \cite{u_net}, an encoder-decoder with skip
 connections between every decoder layer and the corresponding encoder layer. The intuition
@@ -36,25 +38,133 @@ exactly the same as a normal binary classifier.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.8\linewidth]{u_net}
+	\includegraphics[width=0.6\linewidth]{u_net}
 	\caption{Standard Encoder-Decoder and U-Net architectures}
 	\label{fig:u_net}
 \end{figure}
 
+\subsection{Training \acrshort{gan}s}
+\label{sub:training_gan}
 
-\subsection{Data}
+In training \acrshort{gan}s, the Discriminator Loss is usually much more important than
+the Generator Loss because it can show if the adversarial training has converged or
+not. As being already explained in Chapter \ref{cha:relatedwork}, when the Discriminator
+Loss is stable at 1.38629436112, we know that they two have reached an equilibrium. 
+
+\acrshort{gan}s are notorious for being very hard to train. As it does not minimize a
+simple scalar loss function, fluctuation in training is very popular and the network does
+not converge eventually. This is a very hard problem and researchers are still working on
+it. Fortunately, it does not always happens. Another common issue is the
+Vanishing Gradient problem caused by a very quickly-converged Discriminator. In most of
+the cases, the job of the Discriminator is much simpler than that of the Generator. When
+its loss is too small, the gradient quickly vanishes in the Back-Propagation steps and
+prevent the Generator to improve. The consequence is that the Discriminator Loss can never
+reach the equilibrium of 1.38629436112.
+
+A common method to solve this problem is to regularize the Discriminator. In this Thesis, we
+occasionally apply the following tricks:
+
+\begin{itemize}
+	\item Slowing down the Discriminator by reducing its learning rate or making it wait
+		for two or even more update steps of the Generator
+	\item Adding instance noise to the inputs of the Discriminator. \cite{kaae}
+	\item Doing One-sided Label Smoothing: replacing the label of the real image
+		by a random number in a small range around 1, [0.7, 1.2] for example, instead of 1
+		\cite{saliman}
+\end{itemize}
+
+While the first two methods are quite trivial as they aim to make the Discriminator job
+harder to balance the work with the Generator, the third method has an interesting
+explanation in Salimans et al. \cite{saliman}. The authors reuse an old concept from
+several decades ago, Label Smoothing, and state that it helps reduce the sensitivity of
+the network with respect to adversarial examples. The reason why we smooth only the real
+samples (label 1) is that, when we apply the trick we now have the new optimal
+Discriminator $D(x) = \frac{\alpha p_{data}(x) + \beta p_{model}(x)}{p_{data}(x) +
+p_{model}(x)}$. When $p_{data}(x)$ is very low and $p_{model}(x)$ is very large,
+$p_{model}$ has no incentive to move towards $p_{data}$. Setting $\beta = 0$, as in usual
+\acrshort{gan}s, completely removes $p_{model}$ from the equation, thus prevents the
+problem.
+
+Besides, in training our Pose-GAN, we also perform another trick: removing all of the
+round-shape objects, such as apple, bowl and food can. We believe that those items can
+confuse the \acrshort{gan} instead of adding important values. This idea is inferred from
+Elhoseiny et al. \cite{elhoseiny}, where the authors also select only 34 out of 51
+categories but do not declare explicitly which categories are chosen. In our
+Pose-GAN, we came up with the same number of to-be-removed categories, which are listed in
+Table \ref{tab:removed_objects}.
+
+\begin{table}[h!]
+	\centering
+	\caption{The round-shape objects removed from Pose-GAN training set}
+	\label{tab:removed_objects}
+	\begin{tabular}{@{}llllll@{}}
+		\toprule
+		\textbf{Category}              & \textbf{Example}      & \textbf{Category}
+		& \textbf{Example}      & \textbf{Category}             & \textbf{Example}      \\
+		\midrule \multicolumn{1}{|l|}{Apple}    &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{apple_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Garlic}       &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{garlic_1_1_1_crop}} &
+		\multicolumn{1}{|l|}{Food Jar} &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{food_jar_1_1_1_crop}}
+		\\
+		\midrule 
+		\multicolumn{1}{|l|}{Peach}    &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{peach_1_1_1_crop}} &
+		\multicolumn{1}{|l|}{Tomato}   &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{tomato_1_1_1_crop}} &
+		\multicolumn{1}{|l|}{Food Cup} &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{food_cup_1_1_1_crop}}
+		\\
+		\midrule 
+		\multicolumn{1}{|l|}{Food Can} &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{food_can_1_1_1_crop}} & 
+		\multicolumn{1}{l|}{Lemon}        &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{lemon_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Glue Stick}   &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{glue_stick_1_1_1_crop}}
+		\\
+		\midrule 
+		\multicolumn{1}{|l|}{Orange}   &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{orange_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Lime}         &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{lime_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Water Bottle} &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{water_bottle_1_1_1_crop}}
+		\\
+		\midrule 
+		\multicolumn{1}{|l|}{Onion}    &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{onion_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Mushroom}     &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{mushroom_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Soda Can} &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{soda_can_1_1_1_crop}} \\
+		\midrule 
+		\multicolumn{1}{|l|}{Bowl}     &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{bowl_1_1_1_crop}} &
+		\multicolumn{1}{l|}{Plate}    &
+		\multicolumn{1}{l|}{\includegraphics[height=0.08\textwidth]{plate_1_1_1_crop}} &
+
+		&                       \\ \cmidrule(r){1-4}
+	\end{tabular}
+\end{table}
+
+\subsection{Data Manipulation}
+
 As being mentioned above, in this Thesis we focus on 2 tasks on \acrshort{gan}: learning
-to generate depth information and learning to generate another pose of an object. As we
-are doing image-to-image translation tasks, we call the conditional image the "input", the
-to-be-generated image the "output", and the ground-truth the "target". The Generator is
-supposed to make the output as close to the target as possible, while the Discriminator
-still tries its best to tell them apart.
+to generate depth information and learning to generate another pose of an object. Just to
+clarify the terminologies, as we are doing image-to-image translation tasks, we call the
+conditional image the "input", the to-be-generated image the "output", and the
+ground-truth the "target". In that way, the Generator is supposed to make the "output" as
+close to the "target" as possible, while the Discriminator still tries its best to tell
+them apart.
 
-In the first \acrshort{gan}, we line the Washington RGBD dataset up by putting every RGB
+In the first \acrshort{gan}, we line the Washington RGB-D dataset up by putting every RGB
 image along with the corresponding depth-map. Here the RGB is the input, the generated
-depth-map is the output, and the . As the RGB image is an 8-bit one and the depth-map is
-16-bit, we have to manipulate the data loading process to make sure that we have the
-correct forms. A wrong manipulation can lead to a great loss of information.
+depth-map is the output, and the depth-map provided by the RGB-D dataset is the target. As
+the RGB image is an 8-bit one and the depth-map is 16-bit, we have to manipulate the data
+loading process to make sure that we have the correct forms. A wrong manipulation can lead
+to a great loss of information.
 
 In the additional \acrshort{gan} where we want to learn to generate a different pose of
 the same object, we use both the RGB frame and the corresponding (real) depth-map as the
@@ -89,7 +199,8 @@ image A and generates image B" is equivalent to "The Generator generates image B
 Discriminator tries to distinguish image B and a target B', while both of them are
 conditioned on image A"
 
-\subsection{Manipulation of depth missing values }
+\subsection{Handling depth missing values }
+
 Due to technical limitations, there are corners that the sensors cannot capture the depth
 information. Those values are represented as 0's in the depth-maps. If we just keep the
 depth-maps as they are and feed them to the Discriminator, the \acrshort{gan} will learn
@@ -98,11 +209,12 @@ values according to its understanding. This is not really what we expect; thus,
 interpolating the missing values can be a good pre-processing step.
 
 In this Thesis, we use the colorization method from a toolbox from NYU \cite{nyu_dataset},
-which applies the colorization method from Levin et al. \cite{levin_colorization}. The algorithm
-uses the RGB information to infer the depth values of the missing points. The
+which applies the colorization method from Levin et al. \cite{levin_colorization}. The
+algorithm uses the RGB information to infer the depth values of the missing points. The
 details of the optimization method can be found in the paper \cite{levin_colorization}.
 
 \section{Baseline task}
+
 For the baseline task, we keep most of the architecture of the 2-channel network proposed
 by Eitel et al. Our implementation makes some changes on the Manipulation of the depth
 missing values and the way we train the network.
@@ -114,8 +226,7 @@ are considered as noise in data. In our implementation, because we also remove t
 missing values from the \acrshort{gan} training process for some reasons that we have
 explained in the previous section, we also do the same to the classification. Basically,
 we would like the data we use to train our \acrshort{gan} and the classifier to have
-identical formats. It turns out that our approach gives slightly better classification
-accuracies, which we will discuss in details in chapter \ref{chap:evaluation}.
+identical formats.
 
 As our approach of handling the missing values already gives better accuracies on the
 original data, we do not perform fine-tuning the AlexNet channels as the authors did. A
@@ -124,12 +235,19 @@ different training rounds without re-doing back-propagation throughout the entir
 of the 2-channel network. In fact, we only train the 2 last layers for most of the
 experiments.
 
-\section{Evaluation Method}
-\subsection{Train-Test split methodology\label{sec:train_test_split}}
+For evaluating our Pose-GAN, we keep the same architecture, but instead of using the
+colorized depth-map for the second channel, we feed the target pose of every frame. In
+this way, for every item the network will receive a pair of RGB images in 2 different
+pose, which we call "Stereo RGB Input". Our objective is to find out if training with 
+stereo images is better than with single RGB image or not. Depth maps do not involve in
+this experiment.
+
+\section{Evaluation Method \label{sec:train_test_split}}
+%\subsection{Train-Test split methodology\label{sec:train_test_split}}
 As we are working on 2 Deep Learning tasks and the dataset contains many details in
 different layers, a naive random Train-Test split is not the optimal approach. For this
 purpose, we design a more stratified split, which is demonstrated in
-Figure~\ref{fig:gan_train_test_split}.
+Figure~\ref{fig:gan_train_test_split_depth, fig:gan_train_test_split_pose}.
 
 For the baseline classifier, we split the data using the same strategy as in Eitel et al
 \cite{eitel}, the work we refer to. In each instance, every fifth frame is sampled
@@ -137,8 +255,8 @@ and in every object, one instance is randomly and completely taken out. This giv
 about 138000 items for training and about 69000 items for testing.  We also perform the
 10-cross-validation splits introduced in Lai et al \cite{washington_rgbd}. That is, each of the
 lifting angle sequence is divided in to 3 sub-sequences (let us recall that each instance
-in the Washington RGBD dataset is recorded in 3 different lifting angles: 30, 45 and 60
-degrees).  Among those 9 sub-sequences, two are randomly added to the evaluation set. In
+in the Washington RGB-D dataset is recorded in 3 different lifting angles: 30, 45 and 60
+degrees). Among those 9 sub-sequences, two are randomly added to the evaluation set. In
 total, each experiment is done by using about 128000 items for training and about 78000
 items for testing.
 
@@ -162,13 +280,14 @@ way, we make sure that:
 		different scales.
 \end{itemize}
 
+
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\linewidth]{img/gan_train_test_split}
+	\includegraphics[width=\linewidth]{img/gan_train_test_split_depth}
 	\caption{Our stratified Train-Test split for evaluating the depth-maps generation with
 		\acrshort{gan}. The Stratified-Sampled Training set is split into a GAN Training
 		Set and GAN Test Set with different proportions.}
-	\label{fig:gan_train_test_split}
+	\label{fig:gan_train_test_split_depth}
 \end{figure}
 
 However, this is worth to know that this approach also has a drawback. The comparisons of
@@ -179,3 +298,21 @@ the data to train the \acrshort{gan} to make sure that the generated data has no
 seen by \acrshort{gan} before. However, if we keep only 50\% of \acrshort{gan} data in the
 classifier's training set, we can use up to 50\% of the remaining data to train it, which
 potentially results in a stronger \acrshort{gan}. 
+
+For the Pose-GAN, the train-test split has an important difference from how we do with the
+Depth-GAN. After training the \acrshort{gan}, we combine the "GAN Generated Data" with "GAN
+Test Set" instead of "GAN Training Set". The reason is that our generated data now
+contains all the poses supposedly in the GAN Training Set because we are doing pose
+rotation. In other words, we are replacing the "GAN Training Set" by the "GAN Generated
+Data". Besides, because of time limitation, we do not perform the experiments in different
+scales like what we do with the Depth-GAN; only the 50-50 proportion is experimented.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{img/gan_train_test_split_pose}
+	\caption{Our stratified Train-Test split for evaluating the pose generation with
+		\acrshort{gan}. The Stratified-Sampled Training set is split into a GAN Training
+		Set and GAN Test Set with different proportions. Note the difference here: GAN
+	generated data is combined with GAN Test Set instead of GAN Training Set.}
+	\label{fig:gan_train_test_split_pose}
+\end{figure}

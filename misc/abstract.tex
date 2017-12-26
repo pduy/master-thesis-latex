@@ -9,26 +9,18 @@
 
 \noindent
 
-\acrfull{gan}s have shown a great potential for being a powerful implicit model. They have
-achieved impressive results in image generation and image-to-image translation. The
-ability to capture a complex data distribution makes \acrshort{gan} a good candidate for
-representation learning and data augmentation, which are effective tools for improving
-\acrlong{ml} performance.
+\acrfull{gan}s have shown potentials for being a powerful implicit model. They have
+achieved impressive results in image super-resolution, image generation and image-to-image
+translation. In this Thesis, we train two \acrfull{gan} models to learn 3D information
+from different household objects and then use them to draw samples to augment training
+datasets of an Object Classifier, as they are potential for learning data representations.
+One of the \acrshort{gan}s synthesizes a 3D depth map from an object image, while the
+other generates rotated RGB version of a given object. Our experiments show that the first
+\acrshort{gan} significantly improves the performance of an Object Classifier, which is
+verified by a T-Test, especially when its synthesized data is added in large proportions,
+such as 75\% of the total training data, to the classifier's training set. The second
+\acrshort{gan} is not yet able to get the same achievement, but its synthesized images
+still look acceptable. Besides, we also do some noise injection experiments to evaluate
+the contribution of Depth in a dual-channel Object Classifier and show that Depth
+contribution is still limited to some extents, comparing to RGB.
 \\
-
-In this Master Thesis, we train some models of \acrfull{gan} to augment an 3D image
-dataset which are useful in enhancing the robustness of an Object Classifier. One of the
-\acrshort{gan}s shows a good ability to translate a normal 2D image to a 3D depth map. The
-results are good in terms of both human eyes and quantitative measurements in a baseline
-Deep Classifier. Our experiments show that \acrshort{gan} synthesized data is useful when
-being added in large quantity to an incomplete (to some extent) training dataset. As Deep
-Learning has been the dominant \acrfull{ai} tool in Computer Vision in the last decade,
-and training a Deep Neural Network requires a huge training dataset, our approach reveals
-a potential direction that can help training a Deep Classifier easier.
-\\
-
-In the way around, it is also very hard to evaluate \acrshort{gan}s' data because these
-models do not minimize a normal scalar loss function, which means traditional quantitative
-methods such as \acrfull{mse} are not able to show how good the synthesized data is. As
-\acrshort{gan}s are popular for generating realistic photos, evaluating them by a very
-well-trained Object Classifier could be a good approach.

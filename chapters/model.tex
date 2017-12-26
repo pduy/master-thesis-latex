@@ -1,0 +1,98 @@
+%! TEX root = /home/duy/TUB/Thesis/latex-source/DiplomarbeitLaTex.tex
+
+\chapter{Model}
+\label{cha:model}
+
+This short chapter is a detailed and layer-wise description of the networks we used in this Thesis.
+
+\section{GAN Model}
+\label{sec:gan_model}
+
+Both of our \acrshort{gan}s use the architecture inherited from \acrshort{pix}
+\cite{pix2pix}. Table \ref{tab:discrim} describes the layer-wise details of our
+Discriminator.
+
+\begin{table}[h]
+\centering
+\caption{Discriminator architecture}
+\label{tab:discrim}
+\begin{tabular}{|l|c|l|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Layer}} & \textbf{Configuration} & \multicolumn{1}{c|}{\textbf{Filters}} & \multicolumn{1}{c|}{\textbf{Strides}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Receptive\\ Field\end{tabular}}} & \multicolumn{1}{c|}{\textbf{Comments}}                                                                                                \\ \hline
+Input                                & \begin{tabular}[c]{@{}c@{}}batch\_size x \\ 256 x 256 x \\ total\_input\_channels\end{tabular} &                                       &                                       &                                                                                         & \begin{tabular}[c]{@{}l@{}}The Discriminator\\ input (GAN's output\\ or Target) is \\ concatenated\\ with the condition.\end{tabular} \\ \hline
+1                                    & Convolution-ReLU                                                                                         & 64                                    & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}After each layer, until \\ layer 4, the number of \\ neurons is reduced by \\ 2 times.\end{tabular}        \\ \hline
+2                                    & \begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                    & 128                                   & 2                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
+3                                    & \begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                    & 256                                   & 2                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
+4                                    & \begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                    & 512                                   & 1                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
+5                                    & Convolution-Sigmoid                                                                                      & 1                                     & 1                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
+\end{tabular}
+\end{table}
+
+The Discriminator is a normal binary image classifier, so the output layer (layer 5) is a
+Sigmoid producing the label (1: Real or 0: Fake) of the input image. All Leaky ReLU
+functions use slope 0.2. The only variation we make is the total number of channels of the
+input layers. In our Depth-GAN, we have 3 channels of the RGB frame and 1 channel of the
+depth map, thus the input layer is $[batch\_size \times 256 \times 256 \times 4]$. In our
+Pose-GAN, we have 4 channels of the condition (RGB and D) and 3 channels (RGB) of the
+rotated frame, thus the input layer is $[batch\_size \times 256 \times 256 \times 7]$. Due
+to the configuration nature of our experimental device, we usually choose $batch\_size$ to
+be from 25 to 32.
+
+\begin{table}[h]
+\centering
+\caption{Generator Architecture}
+\label{tab:generator}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Layer}} & \multicolumn{1}{c|}{\textbf{Configuration}}                                                                            & \multicolumn{1}{c|}{\textbf{Filters}}                      & \multicolumn{1}{c|}{\textbf{Strides}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Receptive\\ Field\end{tabular}}} & \multicolumn{1}{c|}{\textbf{Comments}}                                                  \\ \hline
+Input                                & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}batch\_size x \\ 256 x 256 x \\ input\_channels\end{tabular}} &                                                            &                                       &                                                                                         & \begin{tabular}[c]{@{}l@{}}The input is the \\ condition.\end{tabular}                  \\ \hline
+Encoder\_1                           & \multicolumn{1}{c|}{Convolution-ReLU}                                                                                  & 64                                                         & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 128 x 128\end{tabular}             \\ \hline
+Encoder\_2                           & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}}                             & 128                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 64 x 64\end{tabular}               \\ \hline
+Encoder\_3                           & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}}                             & 256                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 32 x 32\end{tabular}               \\ \hline
+Encoder\_4                           & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}}                             & 512                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 16 x 16\end{tabular}               \\ \hline
+Encoder\_5                           & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}}                             & 512                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 8 x 8\end{tabular}                 \\ \hline
+Encoder\_6                           & \begin{tabular}[c]{@{}l@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                                  & 512                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 4 x 4\end{tabular}                 \\ \hline
+Encoder\_7                           & \begin{tabular}[c]{@{}l@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                                  & 512                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 2 x 2\end{tabular}                 \\ \hline
+Encoder\_8                           & \begin{tabular}[c]{@{}l@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                                  & 512                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 1 x 1\end{tabular}                 \\ \hline
+Decoder\_8                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 1024                                                       & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Dropout = 0.5\\ Output dimension: \\ 2 x 2\end{tabular} \\ \hline
+Decoder\_7                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 1024                                                       & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Dropout = 0.5\\ Output dimension: \\ 4 x 4\end{tabular} \\ \hline
+Decoder\_6                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 1024                                                       & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Dropout = 0.5\\ Output dimension: \\ 8 x 8\end{tabular} \\ \hline
+Decoder\_5                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 1024                                                       & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 16 x 16\end{tabular}               \\ \hline
+Decoder\_4                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 512                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 32 x 32\end{tabular}               \\ \hline
+Decoder\_3                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 256                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 64 x 64\end{tabular}               \\ \hline
+Decoder\_2                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ BatchNorm\end{tabular}                                                & 128                                                        & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 128 x 128\end{tabular}             \\ \hline
+Decoder\_1                           & \begin{tabular}[c]{@{}l@{}}ReLU-Deconvolution-\\ Tanh\end{tabular}                                                     & \begin{tabular}[c]{@{}l@{}}Output \\ Channels\end{tabular} & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension: \\ 256 x 256\end{tabular}             \\ \hline
+\end{tabular}
+\end{table}
+
+The Generator is basically a U-Net Encoder-Decoder with skip connections between the
+mirrors in the Encoder part and Decoder. The detailed specs of each layer is described in
+Table \ref{tab:generator}. There are 8 layers of Encoding and 8 layers of Decoding. A
+Dropout of 0.5 is applied in the first 3 layers of the Decoder to create a form of
+randomization in both Training and Testing. This Dropout replaces the role of the $z$
+vector in Vanilla \acrshort{gan}.
+
+
+\section{Object Classification Model}
+\label{sec:classification_model}
+
+As we have mentioned before, we use the model from Eitel et al. \cite{eitel}. The
+architecture has been described in figure \ref{fig:eitel_net}. We extract the
+representations of both RGB and Depth at the last layer of the corresponding AlexNet
+tunnel, then concatenate them into a $[1 \times 8192]$ vector as the input to the fusion
+network, which consists of 2 fully-connected layers. The specs of the network is described
+in Table \ref{tab:fusing_network}. We train this network using the AlexNet representations
+of RGB-Depth pairs from the Washington RGB-D dataset.
+
+\begin{table}[h]
+\centering
+\caption{Fusing Network for Eitel et al. \cite{eitel}}
+\label{tab:fusing_network}
+\begin{tabular}{|l|c|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Layer}} & \textbf{Configuration}                                                      & \multicolumn{1}{c|}{\textbf{Output}} & \multicolumn{1}{c|}{\textbf{Comments}}                                             \\ \hline
+Input                                & \begin{tabular}[c]{@{}c@{}}batch\_size x \\ 8192\end{tabular}          &                                      & \begin{tabular}[c]{@{}l@{}}AlexNet representations\\ of RGB and Depth\end{tabular} \\ \hline
+Fusion Layer                         & \begin{tabular}[c]{@{}c@{}}Fully Connected Layer -\\ ReLU\end{tabular}      & 1 x 4096                        & \begin{tabular}[c]{@{}l@{}}"Fusing" RGB\\ and Depth Inputs\end{tabular}            \\ \hline
+Classification Layer                 & \begin{tabular}[c]{@{}c@{}}Fully Connected Layer -\\ (Softmax)\end{tabular} & 1 x 51                          & 51 classes                                                                         \\ \hline
+\end{tabular}
+\end{table}

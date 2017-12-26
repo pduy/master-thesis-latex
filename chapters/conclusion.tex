@@ -1,10 +1,49 @@
-\chapter{Conclusion\label{cha:conclusion}}
-The final chapter summarizes the thesis. 
+%! TEX root = /home/duy/TUB/Thesis/latex-source/DiplomarbeitLaTex.tex
 
-\section{Summary\label{sec:summary}}
+\chapter{Conclusion and Future Work \label{cha:conclusion}}
 
-\section{Problems Encountered\label{sec:problems}}
+In conclusion, our experiments show that Depth Data is contributive and adding depth data
+from our Depth-GAN is beneficial to training an Object Classifier to different extents. 
+It is worth noticing that, because of a drawback of our train-test split explained in
+section \ref{sec:train_test_split}, our \acrshort{gan} creating different proportions
+are not equal. This is clearly demonstrated in section \ref{sub:depth_gan}. However,
+despite the disadvantages it has, the \acrshort{gan} trained by 10\% of the data still
+performs greatly by improving the classification results significantly, comparing to the
+classifier trained on only 10\% of the original data. The same is true for the
+\acrshort{gan} trained with 25\% of the original data.
 
+Therefore, the Depth-GAN is particularly useful when our "real" training data is not
+complete and the synthesized data is added in a large proportion (the 10-90 case). The use
+case of it is when we have a large training set but only a small portion of images have
+depth maps included, or when there is no depth maps at all, then it is a good idea to
+synthesize them.
 
-\section{Future Work\label{sec:futurework}}
+In the way around, if we consider the baseline classifier as a quantitative tool to
+evaluate \acrshort{gan} data, then our Depth-GAN is showing its potentials. The results
+are good in both ways: to human eyes, as demonstrated in Figure~\ref{fig:gan_depth}, and
+in quantitative metrics, shown in the accuracies plot \ref{fig:eitel_accuracies} and
+T-Test results \ref{tab:t_test}.
+
+The Pose-GAN, in another way, only does good jobs on some particular objects. It is
+understandable as its task is much more complicated than the Depth-GAN and other
+\acrshort{pix} applications. It is not a simple Image-to-Image translation task, but
+requires a good understanding about the 3D space. Although we have provided the depth map
+(as the 4th dimension), the Pose-GAN still does not utilize this information well and
+cannot capture the full 3D space distribution of the objects. A reason could be that this
+setting (4-dimensional image with 4 channels R,G,B, and D) is still not optimal. A
+reasonable future work is to try another depth representation when training the Pose-GAN.
+
+While training the baseline classifier with both the original and the synthesized data,,
+we observe a behavior that the network learns much more from the RGB channels than the
+Depth one. We tried to regularize the RGB channels in different ways, such as adding
+Gaussian Noise to the RGB frame and Dropouts, but cannot change the Network's learning
+behavior. Similar to the point above, using another representation of Depth, instead of
+colorizing and treating it as a second RGB frame, could be the answer and could improve
+the classification results even further.
+
+Furthermore, as the Discriminator of \acrshort{gan}s is trained to perform good
+classification between real data and the synthesized data from the Generator, it can also
+contain layers with useful information about the dataset. Another feasible future work is
+to take the weight vectors of one or a few layers before the Softmax as the
+representations for other tasks, such as our baseline classification.
 
