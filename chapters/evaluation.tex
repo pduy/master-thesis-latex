@@ -2,7 +2,7 @@
 
 \chapter{Evaluation\label{cha:evaluation}}
 As we have discussed in the previous chapters, we feed the \acrshort{gan} generated data
-to the 2-channel Object Classification network in different proportions with respect to
+to the two-channel Object Classification network in different proportions with respect to
 the amount of original data. On one hand, we expect that \acrshort{gan}, especially the
 Generator can be a good data generation engine which can help training the classification
 task better. On the other hand, we hope that a well-trained classifier could be a good
@@ -19,12 +19,13 @@ We train the deep classifier in the following settings:
 
 \begin{itemize}
 	\item Using the original data with both Depth and RGB information
-	\item Using only a part of the original data (in different scales) with both Depth and
+	\item Using only a part of the original data (in different proportions) with both Depth and
 		RGB information
 	\item Using a part of the data (in different scales) with both Depth and RGB
 		information, the remaining is substituted by \acrshort{gan} generated data
-	\item Using the original data but with only RGB information in different scales, which
-		is to determine the contribution that Depth data adds to the learning procedure
+	\item Using the original data but with only RGB information in different proportions
+		(10\%, 25\%, and 50\%), to determine the contribution that Depth data adds to the
+		learning procedure
 \end{itemize}
 
 \section{Learning Curves}
@@ -33,15 +34,14 @@ We train the deep classifier in the following settings:
 \acrshort{gan}s are notoriously hard to train, mainly because it does not minimize a
 particular scalar function. Fluctuation and Gradient Vanishing of the Discriminator are
 common problems, as being described in section \ref{sub:training_gan}. In this project,
-Fortunately we only face training problems for the Pose-GAN, which is acceptable because
-this \acrshort{gan} is actually doing a much more complicated work than Depth-GAN.
+fortunately we only face training problems with the Pose-GAN, which is acceptable because
+this \acrshort{gan} actually do a much more complicated work than Depth-GAN.
 
 The Depth-GAN's Discriminator-Loss can converge quite early to around 1.4 and becomes a
 constant since then, which is a good sign because we have shown in chapter
-\ref{cha:relatedwork} that the Optimal Discriminator is at the Loss of 1.38629436112 (or
--1.38629436112 depending on the direction we are optimizing). It is demonstrated in
-Figure~\ref{fig:depth_gan_discrim_loss}. As it already converges, we do not need to
-perform any regularization here.
+\ref{cha:relatedwork} that the Optimal Discriminator is at the Absolute Loss of
+1.38629436112. It is demonstrated in Figure~\ref{fig:depth_gan_discrim_loss}. As it
+already converges, we do not need to perform any regularization here.
 
 \begin{figure}[h!]
 	\centering
@@ -84,7 +84,7 @@ Discriminator.
 \label{sec:results}
 
 Before going to quantitative measurements, it is worthy to take a look as what our
-\acrshort{gan} produces. 
+\acrshort{gan}s produce.
 
 \subsection{Depth-GAN}
 \label{sub:depth_gan}
@@ -100,6 +100,21 @@ data from 50\% to 25\% and 10\%, the quality of the synthesized depth maps also 
 reduces. The latter Depth-GANs produce images with more noise; but they still have decent
 details. This is understandable as we have explained in section
 \ref{sec:train_test_split}.
+
+Taking a look at those maps, we can see that the \acrshort{gan} does learn some trivial
+knowledge. For instance, the bottom pixels tend to be closer to the sensor than the pixels
+at the top of the image; and when there is a sharp edge or a sudden change of color
+patterns, there is usually an object placed on top of another. We can clearly see the
+second property in the sample of the fruits and the keyboard in Figure~\ref{fig:gan_depth}.
+
+In these sample outputs from our Depth-GAN, we also see another popular advantage of
+\acrshort{gan} which is already discussed in some other works \cite{gan, cogan, pix2pix}.
+That is, the edges in the synthesized images are very sharp. If we instead minimized a
+squared loss function for example, we could expect a much more blurry outcome. It is also
+one of the reasons that using common scalar error functions such as \acrshort{mse} is not
+a good way to evaluate \acrshort{gan}s' results.
+
+\clearpage
 
 \begin{figure}[h!]
 	\centering
@@ -122,20 +137,6 @@ details. This is understandable as we have explained in section
 	\label{fig:gan_depth}
 \end{figure}
 
-Taking a look at those maps, we can see that the \acrshort{gan} does learn some trivial
-knowledge. For instance, the bottom pixels tend to be closer to the sensor than the pixels
-at the top of the image; and when there is a sharp edge or a sudden change of color
-patterns, there is usually an object placed on top of another. We can clearly see the
-second property in the sample of the fruits and the keyboard in Figure~\ref{fig:gan_depth}.
-
-In these sample outputs from our Depth-GAN, we also see another popular advantage of
-\acrshort{gan} which is already discussed in some other works \cite{gan, cogan, pix2pix}.
-That is, the edges in the synthesized images are very sharp. If we instead minimize a
-squared loss function for example, we could expect a much more blurry outcome. It is also
-one of the reasons that using common scalar error functions such as \acrshort{mse} is not
-a good way to evaluating \acrshort{gan}s' results.
-
-
 \subsection{Pose-GAN}
 \label{sub:pose_gan}
 
@@ -150,28 +151,20 @@ condition/input.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{gan_pose_samples}
-	\caption{Some generated samples from Pose-GAN trained with 50\% data. Note: The actual input is a 4-D image
-	with the 4th dimension being the Depth-map, here we show only the RGB frame.}
+	\includegraphics[width=\linewidth]{gan_pose_samples}
+	\caption{Some generated samples from Pose-GAN trained with 50\% data. Note: The actual
+		input is a 4-D image with the 4th dimension being the Depth-map, here we show only the
+	RGB frame.}
 	\label{fig:gan_pose_samples}
 \end{figure}
 
 \section{Performance of Depth-GAN Data}
+
 In the first experiment, we try to reproduce Eitel et al. \cite{eitel}. We can
 see the plotted results in Figure \ref{fig:eitel_accuracies}.
 
-\begin{figure}[h]
-	\caption{Classification accuracies on Washington Dataset in different settings,
-		trained and tested in 10 stratified random splits. The left number in a pair indicates
-		the proportion of real data, and the right number indicates the proportion of synthesized
-	data added.}
-	\centering
-	\includegraphics[width=\textwidth]{img/eitel_accuracies}
-	\label{fig:eitel_accuracies}
-\end{figure}
-
 In general, we can see that \acrshort{gan} has good contribution in the classification
-performance. It is worth to mention that the transfer learning technique works very well,
+performance. It is worth mentioning that the transfer learning technique works very well,
 so we still have the accuracies more than 80\% even when we use only 10\% of the data. It
 is also expected to see the accuracies drop when we use only RGB data for training the
 network, but the difference is only a few percentages, which is an indication that the
@@ -188,8 +181,7 @@ higher in average than the corresponding results without depth.
 		For each block, Depth-GAN data is added to the training set (the
 		right-hand-side numbers) and there is one experiment with only RGB data. All
 		accuracies are compared with the result batch trained by the corresponding amount
-		of original data. All values lower than 0.05 are highlighted.
-	}
+		of original data. All values lower than 0.05 are highlighted.}
 	\label{tab:t_test}
 	\begin{tabular}{|l|l|l|}
 		\hline
@@ -218,15 +210,26 @@ the Dependent Test is that our statistics are the results of the same experiment
 Samples is reasonable.
 
 \begin{figure}[h!]
+	\caption{Classification accuracies on Washington Dataset in different settings,
+		trained and tested in 10 stratified random splits. The left number in a pair indicates
+		the proportion of real data, and the right number indicates the proportion of synthesized
+	data added.}
 	\centering
-	\includegraphics[width=\linewidth]{t_test_plot}
-	\caption{Visualized T-Test results in table \ref{tab:t_test}. The blue bars are lower
-	and the orange bars are higher than 0.05 . Most of the important
-	proportions of \acrshort{gan} data produce significantly different accuracies (higher).
-	When comparing with the whole original data, only the 10-90 case yields a significantly
-different accuracy (lower). Note: Some values are too small that they do not show clearly
-in this plot (see table \ref{tab:t_test}), but the important point is they are much
-smaller than 0.05 (the red line)}
+	\includegraphics[width=0.9\textwidth]{img/eitel_accuracies}
+	\label{fig:eitel_accuracies}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{t_test_plot}
+	\caption{Visualization of table \ref{tab:t_test}. The blue bars are lower
+	and the orange bars are higher than 0.05. 
+	%Most of the important proportions of \acrshort{gan} data produce significantly
+	%different accuracies (higher).  When comparing with the whole original data, only the
+	%10-90 case yields a significantly different accuracy (lower). 
+	Note: Some values are too small that they do not show clearly in this plot (see table
+	\ref{tab:t_test}), but the important point is they are much smaller than 0.05 (the red
+line)}
 \label{fig:t_test_plot}
 \end{figure}
 
@@ -240,18 +243,22 @@ both the T-test and the mean accuracies plot in \ref{fig:eitel_accuracies} to re
 conclusion. If the test says that we can reject the null hypothesis, we conclude that the
 one having higher mean is significantly better than the one having lower mean.
 
-Table \ref{tab:t_test} and Figure \ref{fig:t_test_plot} show the T-test p-values for the
-experiments with 50\% of original data comparing to the 50-0 case. Following the
-significant level of 0.05, we can reject the null hypothesis for the case of 50-50, 50-40,
-and 50 with only RGB, meaning they are significantly different from the results of 50-0.
-As the plot in Figure~\ref{fig:eitel_accuracies} shows higher mean values for 50-50 and
-50-40 and lower value for 50 with only RGB, it is reasonable to conclude that adding those
-proportions of \acrshort{gan} data improves training the classifier significantly, and
-adding depth data to the training indeed adds important values to the network. In this
-case we add incremental amounts of \acrshort{gan} data (20\%, 30\% and 40\%) to see the
-trend of \acrshort{gan}'s contribution. The accuracy plot \ref{fig:eitel_accuracies,}
-together with the T-test results \ref{tab:t_test}, shows a clear incremental contribution
-with respect to the amount of \acrshort{gan} data.
+We can see in Table \ref{tab:t_test}, or even more clearly in the visualized version in
+Figure \ref{fig:t_test_plot}, the T-test p-values for the experiments plotted in
+Figure~\ref{fig:eitel_accuracies}. Based on those plots, we can conclude which strategies
+significantly improve the classification training procedure.
+
+In the case of 50\% of the original data, following the significant level of 0.05, we can
+reject the null hypothesis for the case of 50-50, 50-40, and 50 with only RGB, meaning
+they are significantly different from the results of 50-0.  As the plot in
+Figure~\ref{fig:eitel_accuracies} shows higher mean values for 50-50 and 50-40 and lower
+value for 50 with only RGB, it is reasonable to conclude that adding those proportions of
+\acrshort{gan} data improves training the classifier significantly, and adding depth data
+to the training indeed adds important values to the network. In this case we add
+incremental amounts of \acrshort{gan} data (20\%, 30\% and 40\%) to see the trend of
+\acrshort{gan}'s contribution. The accuracy plot \ref{fig:eitel_accuracies}, together with
+the T-test results \ref{tab:t_test}, shows a clear incremental contribution with respect
+to the amount of \acrshort{gan} data.
 
 For the cases of 25\% and 10\% of original data, we only experiment with the full amount of
 \acrshort{gan} data. The p-values are even more significantly lower than 0.05, indicating
@@ -279,7 +286,7 @@ improving the classification performance in an RGB-Depth two-channel Deep Neural
 However, it was still not clear how much Depth Data contributes to the task. This is
 important because if the network only learns from RGB data, our previous results do not
 make too much sense and do not prove that our Depth-GAN is learning good Depth
-Representations. Fortunately, the previous experiments also revealed that the accuracies
+Representations. A good news is, the previous experiments also revealed that the accuracies
 achieved using only the RGB channels are significantly lower than with Depth involved. 
 
 In this section, we would like to clarify how Depth contributes to the learning process by
@@ -336,7 +343,7 @@ to RGB is much steeper than the injection to Depth.
 	\label{fig:noise_injection_2_channels}
 \end{figure}
 
-\section{Performance of Pose-GAN Data}
+\section{Performance of Pose-GAN Data \label{sec:performance_pose}}
 
 For Pose-GAN, we train the baseline classifier with only the 50-50 proportion. Although
 the resulting images look reasonable, they are still not perfect. There are many blurry
@@ -346,21 +353,158 @@ eraser. Therefore, it is not a surprise that we achieve only an accuracy of 66\%
 training the object classifier with the \acrshort{gan} data. As this is a very bad overall
 accuracy and because of time limitation, we do not go further to perform the same
 experiments as what we do with Depth-GAN. However, it is probably a good idea to look at
-the category-wise accuracies to see which category is easy for the \acrshort{gan} to learn
-and which is not.
+the category-wise accuracies to see which categories are easy for the \acrshort{gan} to learn
+and which are not.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=\linewidth]{pose_gan_accuracies}
 	\caption{Category-wise accuracies of the original data (Left) and Pose-GAN Data in
-		50-50 proportion (Right). All the
-	categories that the Pose-GAN does at least equally to the original data are
-highlighted in blue.}
+		50-50 proportion (Right). All the categories that the Pose-GAN performance is
+		acceptable are highlighted in blue. By "acceptable" we mean that the accuracies is within
+	a 0.1 error bound compared with the original data.}
 	\label{fig:pose_gan_accuracies}
 \end{figure}
 
-In Figure~\ref{fig:pose_gan_accuracies}, only a few categories are well or better
-classified using the data from the Pose-GAN, which means this \acrshort{gan} is still not
-good enough to capture 3D space representation, although most of the synthesized RGB
-images are still distinguishable by human eyes (see Figure \ref{fig:gan_pose_samples}).
+In Figure~\ref{fig:pose_gan_accuracies}, only a few categories are
+as-well-or-better classified using the data from the Pose-GAN, which means this
+\acrshort{gan} is still not good enough to capture the entire 3D space representation,
+although most of the synthesized RGB images are still distinguishable by human eyes (see
+Figure \ref{fig:gan_pose_samples}).
 
+We demonstrate some categories that the Pose-GAN performs quite well in
+Figure~\ref{fig:acceptable}. Most of the synthesized objects still have problems with
+complex details, but some of them are very fine. The calculator, for instance, is
+well-rotated and can be clearly detected by human eyes; and the details such as the keypad
+are still adequate. The Bell Pepper is almost perfect, but it is a round object so it is
+easier for the Generator to learn. The Coffee Mug is successfully rotated, but loses all
+the sharp textures.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/bell_pepper_1_1_12}
+		\caption{Bell Pepper}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/calculator_2_1_2}
+		\caption{Calculator}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/cap_1_1_2}
+		\caption{Cap}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/cereal_box_1_1_2}
+		\caption{Cereal Box}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/coffee_mug_1_1_5}
+		\caption{Coffee Mug}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/food_box_1_1_14}
+		\caption{Food Box}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/food_jar_1_1_14}
+		\caption{Food Jar}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/greens_1_1_5}
+		\caption{Greens}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/pear_1_1_3}
+		\caption{Pear}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/pitcher_2_1_2}
+		\caption{Pitcher}
+	\end{subfigure} 
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=\textwidth]{acceptable/scissors_1_1_2}
+		\caption{Scissors}
+	\end{subfigure} 
+	
+	\caption{Samples from the categories in which the synthesized objects produce
+		acceptable accuracies, in figure \ref{fig:pose_gan_accuracies}. On the left are
+	the original objects, on the right are the rotated pose produced by Pose-GAN.}
+	\label{fig:acceptable}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/food_can_1_1_14}
+		\caption{Food Can}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/garlic_1_1_15}
+		\caption{Garlic}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/glue_stick_1_1_2}
+		\caption{Glue Stick}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/instant_noodles_2_1_14}
+		\caption{Instant Noodles}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/lemon_1_1_2}
+		\caption{Lemon}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/lightbulb_1_1_2}
+		\caption{Light Bulb}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/lime_1_1_8}
+		\caption{Lime}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/orange_1_1_2}
+		\caption{Orange}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/rubber_eraser_1_1_2}
+		\caption{Rubber Eraser}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/shampoo_1_2_4}
+		\caption{Shampoo}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/pliers_2_1_3}
+		\caption{Pliers}
+	\end{subfigure}
+	\begin{subfigure}{0.32\textwidth}
+		\includegraphics[width=0.8\linewidth]{not_acceptable/stapler_2_1_2}
+		\caption{Stapler}
+	\end{subfigure}
+	
+	\caption{Samples from the categories in which the synthesized objects does not produce
+		good results in figure \ref{fig:pose_gan_accuracies}.}
+	\label{fig:not_acceptable}
+\end{figure}
+
+On the contrary, Figure~\ref{fig:not_acceptable} shows some examples of the objects
+behaving much worse in the classifier than the original data.  Among the failed ones, only
+The Light Bulb and the Glue Stick are indeed bad. They do not have a clear shape and are
+not clearly distinguishable from the background. The rest of them still look quite nice,
+such as the Instant Noodles, the Stapler and the Rubber Eraser. The Shampoo and the Food
+Can are not as good as the two above, but are still better, or at least comparable to the
+Cap and the Food Box in Figure~\ref{fig:acceptable}. An observed phenomenon is that
+regardless of how we train the Pose-GAN, the classification results of those categories
+are still equally bad, although the visual outcomes do improve noticeably as we apply more
+regularization tricks. This raises an interesting question on why the classifier fails to
+correctly recognize the synthesized images while they still look very good to human eyes;
+and at the same time performs greatly with the real counterparts. More work might need to
+be done in order to find the reason why they behave differently while sharing similar
+appearance qualities. 
+
+Because we remove 17 categories from the Pose-GAN's training set as being mentioned in
+section \ref{sub:training_gan}, we also try to make it a fairer game by also removing the
+same categories from the training and test sets of the classifier. However, the results of
+the remaining categories show no differences from what we have discussed above.

@@ -1,9 +1,9 @@
-%! TEX root = /home/duy/TUB/Thesis/latex-source/DiplomarbeitLaTex.tex
+%! TEX root = /home/duy/TUB/thesis/latex-source/DiplomarbeitLaTex.tex
 
 \chapter{Model}
 \label{cha:model}
 
-This short chapter is a detailed and layer-wise description of the networks we used in this Thesis.
+This short chapter is a detailed and layer-wise description of the networks we used in this thesis.
 
 \section{GAN Model}
 \label{sec:gan_model}
@@ -13,19 +13,19 @@ Both of our \acrshort{gan}s use the architecture inherited from \acrshort{pix}
 Discriminator.
 
 \begin{table}[h]
-\centering
-\caption{Discriminator architecture}
-\label{tab:discrim}
-\begin{tabular}{|l|c|l|l|l|l|}
-\hline
-\multicolumn{1}{|c|}{\textbf{Layer}} & \textbf{Configuration} & \multicolumn{1}{c|}{\textbf{Filters}} & \multicolumn{1}{c|}{\textbf{Strides}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Receptive\\ Field\end{tabular}}} & \multicolumn{1}{c|}{\textbf{Comments}}                                                                                                \\ \hline
-Input                                & \begin{tabular}[c]{@{}c@{}}batch\_size x \\ 256 x 256 x \\ total\_input\_channels\end{tabular} &                                       &                                       &                                                                                         & \begin{tabular}[c]{@{}l@{}}The Discriminator\\ input (GAN's output\\ or Target) is \\ concatenated\\ with the condition.\end{tabular} \\ \hline
-1                                    & Convolution-ReLU                                                                                         & 64                                    & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}After each layer, until \\ layer 4, the number of \\ neurons is reduced by \\ 2 times.\end{tabular}        \\ \hline
-2                                    & \begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                    & 128                                   & 2                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
-3                                    & \begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                    & 256                                   & 2                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
-4                                    & \begin{tabular}[c]{@{}c@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                                    & 512                                   & 1                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
-5                                    & Convolution-Sigmoid                                                                                      & 1                                     & 1                                     & 4x4                                                                                     &                                                                                                                                       \\ \hline
-\end{tabular}
+	\centering
+	\caption{Discriminator architecture}
+	\label{tab:discrim}
+	\begin{tabular}{|l|l|l|l|l|l|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Layer}} & \multicolumn{1}{c|}{\textbf{Configuration}}                                               & \multicolumn{1}{c|}{\textbf{Filters}} & \multicolumn{1}{c|}{\textbf{Strides}} & \multicolumn{1}{c|}{\textbf{\begin{tabular}[c]{@{}c@{}}Receptive\\ Field\end{tabular}}} & \multicolumn{1}{c|}{\textbf{Comments}}                                                                                                 \\ \hline
+		Input                                & \begin{tabular}[c]{@{}l@{}}batch size x\\ 256 x 256 x\\ total input channels\end{tabular} &                                       &                                       &                                                                                         & \begin{tabular}[c]{@{}l@{}}The Discriminator \\ input (GAN's output \\ or Target) is\\ concatenated \\ with the condition\end{tabular} \\ \hline
+		1                                    & Convolution-ReLU                                                                          & 64                                    & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension:\\ 128 x 128\end{tabular}                                                                  \\ \hline
+		2                                    & \begin{tabular}[c]{@{}l@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                     & 128                                   & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension:\\ 64 x 64\end{tabular}                                                                    \\ \hline
+		3                                    & \begin{tabular}[c]{@{}l@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                     & 256                                   & 2                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension:\\ 32 x 32\end{tabular}                                                                    \\ \hline
+		4                                    & \begin{tabular}[c]{@{}l@{}}Convolution-BatchNorm-\\ ReLU\end{tabular}                     & 512                                   & 1                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension:\\ 31 x 31\end{tabular}                                                                    \\ \hline
+		5                                    & Convolution-Sigmoid                                                                       & 1                                     & 1                                     & 4x4                                                                                     & \begin{tabular}[c]{@{}l@{}}Output dimension:\\ 30 x 30\end{tabular}                                                                    \\ \hline
+	\end{tabular}
 \end{table}
 
 The Discriminator is a normal binary image classifier, so the output layer (layer 5) is a
@@ -84,6 +84,10 @@ network, which consists of 2 fully-connected layers. The specs of the network is
 in Table \ref{tab:fusing_network}. We train this network using the AlexNet representations
 of RGB-Depth pairs from the Washington RGB-D dataset.
 
+For Depth-GAN data, we always train with all categories, so the output dimension is always $[1
+\times 51]$ as we have 51 classes. For Pose-GAN data, we perform another experiment where
+we remove all the round objects. In that case the output dimension is $[1 \times 34]$.
+
 \begin{table}[h]
 \centering
 \caption{Fusing Network for Eitel et al. \cite{eitel}}
@@ -93,6 +97,7 @@ of RGB-Depth pairs from the Washington RGB-D dataset.
 \multicolumn{1}{|c|}{\textbf{Layer}} & \textbf{Configuration}                                                      & \multicolumn{1}{c|}{\textbf{Output}} & \multicolumn{1}{c|}{\textbf{Comments}}                                             \\ \hline
 Input                                & \begin{tabular}[c]{@{}c@{}}batch\_size x \\ 8192\end{tabular}          &                                      & \begin{tabular}[c]{@{}l@{}}AlexNet representations\\ of RGB and Depth\end{tabular} \\ \hline
 Fusion Layer                         & \begin{tabular}[c]{@{}c@{}}Fully Connected Layer -\\ ReLU\end{tabular}      & 1 x 4096                        & \begin{tabular}[c]{@{}l@{}}"Fusing" RGB\\ and Depth Inputs\end{tabular}            \\ \hline
-Classification Layer                 & \begin{tabular}[c]{@{}c@{}}Fully Connected Layer -\\ (Softmax)\end{tabular} & 1 x 51                          & 51 classes                                                                         \\ \hline
+Classification Layer                 & \begin{tabular}[c]{@{}c@{}}Fully Connected Layer
+	-\\ (Softmax)\end{tabular} & 1 x 51                          & 51 classes or 34 classes \\ \hline
 \end{tabular}
 \end{table}

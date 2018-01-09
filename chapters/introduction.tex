@@ -55,7 +55,7 @@ task dramatically but also increase the robustness of the learning engine.
 
 % GAN
 \subsection{\acrfull{gan} \label{subsec:intro_gan}}
-\acrlong{gan}s \cite{gan} are Unsupervised/Semi-Supervised Deep Neural Networks where the
+\acrlong{gan} \cite{gan} are Unsupervised/Semi-Supervised Deep Neural Networks where the
 learning engine consists of two competing components: The Generator and the Discriminator.
 As its name indicates, the generator tries to generate data from a noise distribution,
 could be conditioned on some input or have no conditions; while the discriminator tries to
@@ -77,7 +77,7 @@ The nature of probabilistic distribution estimation of \acrshort{gan}s motivates
 researchers to utilize it for extracting data representation. There are different ideas on
 using \acrshort{gan} to improve an \acrshort{ml} task. For instance, the Generator, which
 is supposed to capture a probabilistic distribution, can draw new samples from its
-knowledge of the data, which could enriches the training and evaluation sets of a
+knowledge of the data, which could enrich the training and evaluation sets of a
 \acrshort{ml} task. This is potential if the \acrshort{gan} is trained well and the
 Generator can capture the data distribution.
 
@@ -87,18 +87,21 @@ data, particularly the Washington RGB-D Dataset \cite{washington_rgbd}. We would
 find out if \acrshort{gan} is able to generate good object images, particularly useful
 images as training items for an Object Recognition task. In the effort to evaluate if
 \acrshort{gan} is able to help improving classification performance
-or not, the Thesis demonstrates different ways of training a \acrshort{gan}
+or not, the thesis demonstrates different ways of training a \acrshort{gan}
 to learn from RGB and Depth data, and testing the \acrshort{gan} results on another Deep
 Network for Object Recognition, which we call the ``Baseline Classifier''.
 
 The thesis focuses on evaluating the performance of a trained \acrshort{gan}'s outputs on
 training a standard \acrshort{ml} task. Particularly, we aim to train \acrshort{gan}s to
 learn distributions from the Washington Object RGB-D Dataset \cite{washington_rgbd}, then
-evaluate the effect that the \acrshort{gan} data have in Eitel et al. \cite{eitel}. In all
-of the experiments, a conditional version of \acrshort{gan} is used. The original
-unconditional \acrshort{gan} is not in the scope of this thesis.  
+evaluate the effect that the \acrshort{gan} data have in an Object Classifier. We choose
+the work from Eitel et al. \cite{eitel}. It is basically a Two-Channel Deep Object
+Classifier taking an RGB image and a Colorized Depth-map of every object as inputs of two
+copies of AlexNet \cite{alexnet}, then doing classification in two deeper fully-connected
+layers. In all of the experiments, a conditional version of \acrshort{gan} is used. The
+original unconditional \acrshort{gan} is not in the scope of this thesis.  
 
-\subsection{Using a \acrshort{gan} to learn representations from Washington RGBD Dataset} 
+\subsection{Using a \acrshort{gan} to learn representations from Washington RGB-D Dataset} 
 In this thesis, two different settings of \acrshort{gan} are experimented. 
 
 In the first model, the objective of the Generator is to generate a good depth map,
@@ -112,7 +115,7 @@ this Generator tries to ``rotate'' the object by an angle. The Discriminator, as
 tries to classify the real RGB-D pair from the ``fake'' pair.
 
 \subsection{Training a deep neural network to do object classification}
-In this Thesis, we use the work from Eitel et al. \cite{eitel} because of several
+In this thesis, we use the work from Eitel et al. \cite{eitel} because of several
 reasons. First, it is relevant to our scope; the authors train an Object Recognition
 Network using Transfer Learning from CaffeNet, one of the first reference implementation
 of AlexNet \cite{alexnet}. Second, its
@@ -121,15 +124,21 @@ evaluation is based on same dataset (Washington RGB-D) and in the manner that fi
 91\% when using both RGB and Depth data).
 
 \subsection{Comparing classification performances on original data and data from
-	\acrshort{gan} in different scales}
+	\acrshort{gan}s in different scales}
 
-We perform the evaluation of a \acrshort{gan} in multiple steps. First, we construct our
-"Baseline Classifier" by reproducing the Eitel et al. \cite{eitel} results. Second, we
-substitute parts of the training data by the generated data from the corresponding
-\acrshort{gan}, re-train the Baseline Classifier accordingly and compare the accuracies.
-Finally, we perform some noise injection experiments to the Depth and RGB components
-respectively to better understand how much those components contribute to the
-classification results.
+We perform the evaluation of a \acrshort{gan} in multiple steps. 
+
+\begin{itemize}
+	\item First, we construct our
+		"Baseline Classifier" by reproducing the Eitel et al. \cite{eitel}.
+	\item Second, we substitute parts of the training data by the generated data from the corresponding
+		\acrshort{gan}.
+	\item Third, we re-train the Baseline Classifier accordingly and compare the
+		accuracies.
+	\item Finally, we perform some noise injection experiments to the Depth and RGB components
+		respectively to better understand how much those components contribute to the
+		classification results.
+\end{itemize}
 
 \section{Outline\label{sec:outline}}
 
@@ -147,7 +156,7 @@ theoretical reasoning. The evaluation strategy and the train-test split are also
 thoroughly discussed.
 \\
 \\
-\textbf{Chapter \ref{cha:model}} describes the specs and architectures of the Networks we
+\textbf{Chapter \ref{cha:model}} describes the specs and architectures of the networks we
 use together with some relevant hyper-parameters.
 \\
 \\
@@ -156,4 +165,4 @@ thoroughly analyzes  the evaluation results of our models.
 \\
 \\
 \textbf{Chapter \ref{cha:conclusion}} summarizes the thesis, describes the problems that
-occurred and gives an outlook about future work.
+occurred and gives an outlook about possible future works.

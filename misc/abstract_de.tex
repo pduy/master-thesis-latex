@@ -8,4 +8,22 @@
 \vspace*{0.2cm}
 
 \noindent 
-Da die meisten Leuten an der TU deutsch als Muttersprache haben, empfiehlt es sich, das Abstract zus�tzlich auch in deutsch zu schreiben. Man kann es auch nur auf deutsch schreiben und anschlie�end einem Englisch-Muttersprachler zur �bersetzung geben.
+
+Generative Adversarial Netzwerke (GAN)s erziehlen bemerkenswerte Leistungen bei der
+L{\"o}sung von Super-Aufl{\"o}sungs-, Bildergenerierungs-,
+Bild-zu-Bild-{\"U}bersetzungsproblemen. In dieser Arbeit werden GAN Modelle in zwei
+verschiedenen Variationen eingesetzt, um Representationen von allt{\"a}glichen
+Gegenst{\"a}nden im Washington RGB-D Datensatz anhand von 3D Information zu lernen.
+Daraufhin wird das generative Modell verwendet um die Bilderkennungsdatenbank zu
+erweitern. In der ersten Variation hat das GAN die Aufgabe das RGB Bild mit tiefen
+Information zu komplimentieren. In der zweiten Variation sch{\"a}tz das GAN anhand eines
+RGB Bildes ein Zweites aus einer anderen Perspektive zu sch{\"a}tzen und damit ein Stereo Bild
+eines Objektes zusamenzusetellen. Ergebnisse wiesen darauf, dass die erste GAN Variation
+zu deutlich h{\"o}heren Bilerkennungsleistungen f{\"u}hrt, sogar, wenn die Anzahl der
+wahren Datenpunkte nur 25\% des trainigssatzes ausmacht und der Rest durch den Generator
+k{\"u}nstlich erweitert wurde. Die Verbesserung ist an einem Signifikanztests
+best{\"a}tigt. Die zweite Variation f{\"u}hrt zu weniger deutlichen Verbesserungen, obowhl
+die generierten Datenpunkte qualitativ akzeptable erscheinen. Zus{\"a}tzlich erfolgt eine
+Bemessung des Beitrags der zwei Eingangs-Modalit{\"a}ten, RGB und Tiefe, und deren
+Einfluss auf die Entscheidung des Klassifikators. Es l{\"a}sst sich erkennen, das die
+Klassifikation viel st{\"a}rker vom RGB Bild h{\"a}ngt, als die Tiefen Eingabe.

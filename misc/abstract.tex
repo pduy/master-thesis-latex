@@ -9,18 +9,19 @@
 
 \noindent
 
-\acrfull{gan}s have shown potentials for being a powerful implicit model. They have
+\acrfull{gan} have shown potentials for being a powerful implicit model. They have
 achieved impressive results in image super-resolution, image generation and image-to-image
-translation. In this Thesis, we train two \acrfull{gan} models to learn 3D information
+translation. In this thesis, we train two \acrshort{gan} models to learn 3D information
 from different household objects and then use them to draw samples to augment training
 datasets of an Object Classifier, as they are potential for learning data representations.
 One of the \acrshort{gan}s synthesizes a 3D depth map from an object image, while the
-other generates rotated RGB version of a given object. Our experiments show that the first
-\acrshort{gan} significantly improves the performance of an Object Classifier, which is
-verified by a T-Test, especially when its synthesized data is added in large proportions,
-such as 75\% of the total training data, to the classifier's training set. The second
-\acrshort{gan} is not yet able to get the same achievement, but its synthesized images
-still look acceptable. Besides, we also do some noise injection experiments to evaluate
-the contribution of Depth in a dual-channel Object Classifier and show that Depth
-contribution is still limited to some extents, comparing to RGB.
+other generates a rotated RGB version of a given object. On the Washington RGB-D dataset,
+our experiments show that the first \acrshort{gan} significantly improves the performance
+of an Object Classifier, especially when its synthesized data is added in large
+proportions, such as 75\% of the total training data, to the classifier's training set.
+The improvement is verified by a T-Test. The second \acrshort{gan} is not yet able to get
+the same achievement, but its synthesized images still look acceptable. Besides, we also
+do some noise injection experiments to evaluate the contribution of Depth in a
+dual-channel Object Classifier and show that Depth contribution is still limited to some
+extents, comparing to RGB.
 \\
